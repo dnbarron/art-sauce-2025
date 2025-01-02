@@ -3,7 +3,6 @@ title: "art-sauce Finance Report"
 author: "David Barron"
 date: "`r format(Sys.Date(), '%d %B %Y' )`"
 output:
-  pdf_document: default
   html_document: null
 ---
 
@@ -30,8 +29,8 @@ library(googlesheets4)
 ```
 
 ```{r readdata}
- as_dta <- read_sheet("https://docs.google.com/spreadsheets/d/1eKrWtCjT86qElyHUVfDRuESNdZzGMvXR25UdAMDiTcY/edit?usp=sharing",
-   sheet = "Accoounts 2024 January - December")
+ as_dta <- read_sheet("https://docs.google.com/spreadsheets/d/1SyszVF2SYg594Z6yqFBbyGqJxVR2C6IjfhJF35Obvks/edit?usp=sharing",
+   sheet = "Accoounts 2025 January - December")
 
 as_dta <- as_dta %>%
   select(Date, Description, Expenditure = `Debit Amount`, Income = `Credit Amount`, Balance, Category)
