@@ -38,6 +38,17 @@ as_dta <- as_dta %>%
 nrows <- dim(as_dta)[1]
 ```
 
+```{r prevdata}
+ prev_as_dta <- read_sheet("https://docs.google.com/spreadsheets/d/1eKrWtCjT86qElyHUVfDRuESNdZzGMvXR25UdAMDiTcY/edit?usp=sharing",
+   sheet = "Accoounts 2024 January - December")
+
+prev_as_dta <- prev_as_dta %>%
+  select(Date, Description, Expenditure = `Debit Amount`, Income = `Credit Amount`, Balance, Category)
+
+prev_nrows <- dim(prev_as_dta)[1]
+
+```
+
 ```{r transformdata}
 
 sum_dta <- function(dta){
@@ -75,7 +86,8 @@ calc.long <- function(dta) {
   ) 
 }
 
-as_long <- calc.long(as_cumsum)
+as_long <- calc.long(as_cumsum) %>%
+  mutate(Year = 2025)
 
 calc.sum <- function(dta){
   dta %>%
@@ -93,20 +105,40 @@ total.expenditure <- as.numeric(as_cumsum[num.months, 3])
 
 ```
 
+```{r prevtransform}
+
+prev_as_sum <- sum_dta(prev_as_dta)
+prev_as_cumsum <- calc.cumsum(prev_as_sum)
+
+prev_num.months <- dim(prev_as_cumsum)[1]
+
+prev_as_long <- calc.long(prev_as_cumsum) %>% 
+  mutate(Year = 2024)
+
+prev_sum_tab <- calc.sum(prev_as_dta)
+
+
+
+```
+
 ```{r plot}
 
-labels <- month.abb[1:num.months]
+labs <- month.abb[1:num.months]
 
-as_long  %>%
-  ggplot(aes(x = Month, y = Amount, colour = Type)) + 
+as_full <- rbind(as_long, prev_as_long)
+
+as_full  %>% mutate(Year = factor(Year)) %>%
+  filter(Month <= num.months) %>%
+  ggplot(aes(x = Month, y = Amount, colour = Type, linetype = Year)) + 
           geom_point() +
           geom_line() +
           scale_x_continuous(
-            breaks = 1:12,
+            breaks = 1:num.months,
             minor_breaks = NULL,
-            label =  month.abb
+            label =  labs
           ) + 
   scale_y_continuous(label = scales::label_dollar(prefix="£")) +
+  scale_linetype_manual(values = c("twodash", "solid")) +
   theme_light() 
 
 ```
@@ -114,9 +146,9 @@ as_long  %>%
 
 ## Income and Expenditure
 
-- Total income since 1 January 2024 is £`r total.income`
+- Total income since 1 January 2025 is £`r total.income`
 
-- Total expenditure since 1 January 2024 is £`r total.expenditure`
+- Total expenditure since 1 January 2025 is £`r total.expenditure`
 
 - **The current year's `r ifelse(total.income - total.expenditure > 0, "surplus", "deficit")` is £`r total.income - total.expenditure`**
 

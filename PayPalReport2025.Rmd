@@ -1,0 +1,83 @@
+---
+title: "PayPal Report"
+author: "David Barron"
+date: "`r format(Sys.Date(), '%d %B %Y' )`"
+output:
+  html_document: default
+---
+
+```{r setup, include=TRUE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, error=TRUE, cache=FALSE)
+library(knitr)
+library(kableExtra)
+options(knitr.kable.NA = '')
+
+# Format money output
+inline_hook <- function(x){
+  format(x, nsmall = 2, scientific = FALSE, big.mark = ",")
+}
+
+knit_hooks$set(inline = inline_hook)
+
+```
+
+```{r intro}
+library(tidyverse)
+library(readxl)
+
+```
+
+```{r readdata}
+yr <- "2025"
+
+fn <- paste0("C:\\Users\\dnbar\\Dropbox\\Art\\art-sauce finance\\art-sauce 2025\\PayPal", yr, ".xlsx" ) 
+
+pp_dta <- read_xlsx(fn,
+   sheet = "PayPal")
+
+pp_dta <- pp_dta %>%
+  select(Date, Name, Gross, Fee, Net, Type, Item = `Item Title`, Status)
+
+nrows <- dim(pp_dta)[1]
+```
+
+```{r pivottable}
+sum_dta <- function(dta){
+  dta %>%
+    filter(Status == "Completed",
+           Type != "General Withdrawal",
+           Type != "General Currency Conversion") %>%
+    mutate(Date = lubridate::ymd(Date),
+           Month = lubridate::month(Date)) %>%
+    group_by(Item) %>%
+    summarise(
+        Net = sum(Net)
+    )  
+}
+
+tot_income <- function(dta){
+  dta %>%
+    filter(Status == "Completed",
+           Type == "General Withdrawal") %>%
+          mutate(Date = lubridate::ymd(Date),
+                 Month = lubridate::month(Date)) %>%
+        group_by(Month) %>%
+        summarise(
+          Gross = -1 * sum(Gross)
+        )  
+}
+
+sum_pp_dta <- sum_dta(pp_dta)
+
+pp_inc <- tot_income(pp_dta)
+
+```
+
+```{r summary}
+
+sum_pp_dta %>% kbl() %>%
+  kable_classic(full_width = FALSE)
+
+```
+
+Total amount transferred to bank account: **£`r sum(pp_inc[,2])`**
