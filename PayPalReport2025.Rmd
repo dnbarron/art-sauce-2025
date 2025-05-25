@@ -3,7 +3,13 @@ title: "PayPal Report"
 author: "David Barron"
 date: "`r format(Sys.Date(), '%d %B %Y' )`"
 output:
-  html_document: default
+  html_document:
+    theme:
+      bg: '#FFF8DC'
+      fg: '#000080'
+      primary: '#00FF00'
+      base_font: Georgia
+      heading_font: Arial
 ---
 
 ```{r setup, include=TRUE, echo=FALSE}
@@ -46,7 +52,8 @@ sum_dta <- function(dta){
   dta %>%
     filter(Status == "Completed",
            Type != "General Withdrawal",
-           Type != "General Currency Conversion") %>%
+           Type != "General Currency Conversion",
+           Type != "Bank deposit to PayPal account") %>%
     mutate(Date = lubridate::ymd(Date),
            Month = lubridate::month(Date)) %>%
     group_by(Item) %>%
@@ -75,8 +82,9 @@ pp_inc <- tot_income(pp_dta)
 
 ```{r summary}
 
-sum_pp_dta %>% kbl() %>%
-  kable_classic(full_width = FALSE)
+sum_pp_dta %>% kbl(caption = "PayPal transactions") %>% 
+  kable_classic(full_width = FALSE, html_font = "Georgia") %>%
+  kable_styling(latex_options = c("hold_position", "scale_down"))
 
 ```
 

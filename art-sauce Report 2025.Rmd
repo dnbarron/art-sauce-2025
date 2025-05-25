@@ -3,7 +3,13 @@ title: "art-sauce Finance Report"
 author: "David Barron"
 date: "`r format(Sys.Date(), '%d %B %Y' )`"
 output:
-  html_document: null
+  html_document:
+   theme:
+      bg: '#FFF8DC'
+      fg: '#000080'
+      primary: '#00FF00'
+      base_font: Georgia
+      heading_font: Arial
 ---
 
 ```{r setup, include=TRUE, echo=FALSE}
@@ -24,7 +30,7 @@ knit_hooks$set(inline = inline_hook)
 ```{r intro}
 library(tidyverse)
 library(googlesheets4)
-
+library(readxl)
 
 ```
 
@@ -123,12 +129,14 @@ prev_sum_tab <- calc.sum(prev_as_dta)
 
 ```{r plot}
 
+num.months <- 12 # comment out to only show YTD
+
 labs <- month.abb[1:num.months]
 
 as_full <- rbind(as_long, prev_as_long)
 
 as_full  %>% mutate(Year = factor(Year)) %>%
-  filter(Month <= num.months) %>%
+ # filter(Month <= num.months) %>%
   ggplot(aes(x = Month, y = Amount, colour = Type, linetype = Year)) + 
           geom_point() +
           geom_line() +
@@ -139,25 +147,33 @@ as_full  %>% mutate(Year = factor(Year)) %>%
           ) + 
   scale_y_continuous(label = scales::label_dollar(prefix="£")) +
   scale_linetype_manual(values = c("twodash", "solid")) +
-  theme_light() 
+  scale_colour_manual(values = c("red", "green3")) +
+  theme_light() +
+    theme(panel.background = element_rect(fill = "#FFF8DC"),
+        plot.background = element_rect(fill = "#FFF8DC"),
+        legend.background = element_rect(fill = "#FFF8DC"))
 
 ```
-
 
 ## Income and Expenditure
 
-- Total income since 1 January 2025 is £`r total.income`
-
-- Total expenditure since 1 January 2025 is £`r total.expenditure`
-
-- **The current year's `r ifelse(total.income - total.expenditure > 0, "surplus", "deficit")` is £`r total.income - total.expenditure`**
-
-- Current account balance £`r as.numeric(as_dta[nrows,5]) `
-
+-   Total income since 1 January 2025 is £`r total.income`
+-   Total expenditure since 1 January 2025 is £`r total.expenditure`
+-   **The current year's `r ifelse(total.income - total.expenditure > 0, "surplus", "deficit")` is £`r total.income - total.expenditure`**
+-   Current account balance £`r as.numeric(as_dta[nrows,5])`
 
 ```{r summary}
 
+nrow_sum <- dim(sum_tab)[1]
 sum_tab %>% kbl() %>%
-  kable_classic(full_width = FALSE)
+  kable_classic(full_width = FALSE, html_font = "Georgia") %>%
+    row_spec(0:nrow_sum, color = "#000080") %>%
+    row_spec(0, bold = TRUE, color = "white", background = "#000080") #%>%
+  #  kable_styling(latex_options = c("hold_position"), position = "center")
 
 ```
+
+
+### Notes
+
+- We have yet to be invoiced by Magdalen Road Studios for the use we have made of MAS
