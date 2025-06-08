@@ -3,8 +3,9 @@ title: "art-sauce Finance Report"
 author: "David Barron"
 date: "`r format(Sys.Date(), '%d %B %Y' )`"
 output:
+  pdf_document: default
   html_document:
-   theme:
+    theme:
       bg: '#FFF8DC'
       fg: '#000080'
       primary: '#00FF00'

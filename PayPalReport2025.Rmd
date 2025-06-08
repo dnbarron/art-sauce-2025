@@ -3,6 +3,7 @@ title: "PayPal Report"
 author: "David Barron"
 date: "`r format(Sys.Date(), '%d %B %Y' )`"
 output:
+  pdf_document: default
   html_document:
     theme:
       bg: '#FFF8DC'
@@ -42,7 +43,7 @@ pp_dta <- read_xlsx(fn,
    sheet = "PayPal")
 
 pp_dta <- pp_dta %>%
-  select(Date, Name, Gross, Fee, Net, Type, Item = `Item Title`, Status)
+  select(Date, Name, Gross, Fee, Net, Type, Item = `Item Title`, Status, Balance)
 
 nrows <- dim(pp_dta)[1]
 ```
@@ -86,6 +87,8 @@ sum_pp_dta %>% kbl(caption = "PayPal transactions") %>%
   kable_classic(full_width = FALSE, html_font = "Georgia") %>%
   kable_styling(latex_options = c("hold_position", "scale_down"))
 
+paypal_balance <- as.numeric(pp_dta[nrows, "Balance"])
 ```
 
-Total amount transferred to bank account: **£`r sum(pp_inc[,2])`**
+
+PayPal balance: **£`r paypal_balance`**
