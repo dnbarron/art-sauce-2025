@@ -17,6 +17,8 @@ output:
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, error=TRUE, cache=FALSE)
 library(knitr)
 library(kableExtra)
+library(here)
+
 options(knitr.kable.NA = '')
 
 # Format money output
@@ -37,7 +39,7 @@ library(readxl)
 ```{r readdata}
 yr <- "2025"
 
-fn <- paste0("C:\\Users\\dnbar\\Dropbox\\Art\\art-sauce finance\\art-sauce 2025\\PayPal", yr, ".xlsx" ) 
+fn <- paste0("PayPal", yr, ".xlsx" ) 
 
 pp_dta <- read_xlsx(fn,
    sheet = "PayPal")

@@ -3,7 +3,6 @@ title: "art-sauce Finance Report"
 author: "David Barron"
 date: "`r format(Sys.Date(), '%d %B %Y' )`"
 output:
-  pdf_document: default
   html_document:
     theme:
       bg: '#FFF8DC'
@@ -11,6 +10,7 @@ output:
       primary: '#00FF00'
       base_font: Georgia
       heading_font: Arial
+  pdf_document: default
 ---
 
 ```{r setup, include=TRUE, echo=FALSE}
@@ -169,12 +169,13 @@ nrow_sum <- dim(sum_tab)[1]
 sum_tab %>% kbl() %>%
   kable_classic(full_width = FALSE, html_font = "Georgia") %>%
     row_spec(0:nrow_sum, color = "#000080") %>%
-    row_spec(0, bold = TRUE, color = "white", background = "#000080") #%>%
-  #  kable_styling(latex_options = c("hold_position"), position = "center")
+    row_spec(0, bold = TRUE, color = "white", background = "#000080") %>%
+    kable_styling(latex_options = c("hold_position"), position = "center")
 
 ```
-
+\pagebreak
 
 ### Notes
 
-- We have yet to be invoiced by Magdalen Road Studios for the use we have made of MAS
+- Outstanding payments for Salon at Makespace and Members' meeting at MRS
+- Seven artists have yet to pay for the North Wall exhibition
